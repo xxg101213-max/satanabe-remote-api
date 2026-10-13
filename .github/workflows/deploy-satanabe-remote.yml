@@ -1,1 +1,63 @@
+name: Publicar Satanabe Remote API
 
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - index.ts
+      - .github/workflows/deploy-satanabe-remote.yml
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Publicar no projeto correto
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      PROJECT_REF: lifmejxuegtvtswlwved
+    steps:
+      - name: Baixar codigo do repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Validar configuracao e arquivos
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$SUPABASE_ACCESS_TOKEN" || (echo 'ERRO: crie o secret SUPABASE_ACCESS_TOKEN no GitHub Actions' && exit 1)
+          test -f index.ts || (echo 'ERRO: arquivo index.ts ausente na raiz do repositorio' && exit 1)
+          mkdir -p supabase/functions/satanabe-remote-api
+          cp index.ts supabase/functions/satanabe-remote-api/index.ts
+          printf '[functions.satanabe-remote-api]\nverify_jwt = false\n' > supabase/config.toml
+          echo "Funcao preparada: satanabe-remote-api"
+          echo "Projeto de destino: $PROJECT_REF"
+
+      - name: Validar acesso ao projeto
+        run: supabase functions list --project-ref "$PROJECT_REF"
+
+      - name: Publicar funcao (sem alterar banco nem site)
+        run: supabase functions deploy satanabe-remote-api --project-ref "$PROJECT_REF" --no-verify-jwt
+
+      - name: Confirmar funcao publicada
+        run: supabase functions list --project-ref "$PROJECT_REF"
+
+      - name: Testar URL publica da funcao
+        shell: bash
+        run: |
+          set -euo pipefail
+          ENDPOINT="https://${PROJECT_REF}.supabase.co/functions/v1/satanabe-remote-api"
+          HTTP_CODE=$(curl -sS --connect-timeout 15 --max-time 30 -o /tmp/api-response.json -w '%{http_code}' "$ENDPOINT")
+          echo "HTTP status do endpoint: $HTTP_CODE"
+          head -c 500 /tmp/api-response.json || true
+          echo
+          if [[ "$HTTP_CODE" != "200" && "$HTTP_CODE" != "405" ]]; then
+            echo "ERRO: endpoint ainda nao responde como esperado (GET -> 200 ou 405)"
+            exit 1
+          fi
