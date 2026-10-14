@@ -41,6 +41,51 @@ async function authenticatedDevice(req: Request, id: unknown) {
   return error ? null : data;
 }
 
+
+// Somente nomes das opções identificadas no .3105; isso NÃO comprova existência de hooks de execução.
+const FEATURE_SCHEMA: Record<string, { kind: 'boolean'|'enum'|'number'|'color', choices?: (string|number)[], min?: number, max?: number }> = {
+  "esp_enabled": { kind: 'boolean' },
+  "esp_skeleton": { kind: 'boolean' },
+  "silent_aim": { kind: 'boolean' },
+  "aim_system": { kind: 'boolean' },
+  "legit_smooth_aimbot": { kind: 'boolean' },
+  "aim_fov_circle": { kind: 'boolean' },
+  "silent_target": { kind: 'enum', choices: ["mixed", "head", "body"] },
+  "aim_system_target": { kind: 'enum', choices: ["chest", "head"] },
+  "headshot_rate": { kind: 'enum', choices: [100, 75, 50, 0] },
+  "fov_radius": { kind: 'number', min: 1, max: 360 },
+  "no_recoil": { kind: 'boolean' },
+  "fast_weapon_switch": { kind: 'boolean' },
+  "fov_color": { kind: 'color' },
+  "skeleton_color": { kind: 'color' },
+};
+function validFeaturePayload(payload: unknown): payload is {key:string,value:unknown} {
+  if (!payload || typeof payload !== 'object' || Array.isArray(payload)) return false;
+  const p = payload as Record<string, unknown>;
+  if (typeof p.key !== 'string' || !Object.prototype.hasOwnProperty.call(FEATURE_SCHEMA, p.key)) return false;
+  const f = FEATURE_SCHEMA[p.key]; const v = p.value;
+  if (f.kind === 'boolean') return typeof v === 'boolean';
+  if (f.kind === 'enum') return !!f.choices?.some(x => x === v);
+  if (f.kind === 'number') return typeof v === 'number' && Number.isInteger(v) && v >= (f.min ?? 0) && v <= (f.max ?? 0);
+  if (f.kind === 'color') return typeof v === 'string' && /^#[0-9a-fA-F]{6}$/.test(v);
+  return false;
+}
+
+// Contrato de transporte v2: Unity JsonUtility nao suporta valores heterogeneos em `payload`.
+// `bridge` usa somente strings, sem retirar `payload` nem alterar o protocolo existente.
+// A confirmacao `applied` cabe somente ao cliente que conseguiu executar a funcao.
+type PendingCommand = { id:string, command:string, payload?:{key?:string,value?:unknown}|null, created_at:string };
+function forUnity(c: PendingCommand) {
+  const p = c.payload;
+  const feature = p && typeof p === 'object' && typeof p.key === 'string' ? FEATURE_SCHEMA[p.key] : null;
+  const kind = c.command === 'ping' ? 'ping' : (c.command === 'set_state' ? 'boolean' : feature?.kind ?? 'unsupported');
+  const value = p && typeof p === 'object' ? p.value : undefined;
+  return { ...c, bridge: {
+    key: p && typeof p === 'object' && typeof p.key === 'string' ? p.key : '',
+    kind, value_text: value === undefined || value === null ? '' : String(value),
+  }};
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response(null, { status: 204, headers: cors });
   if (req.method !== 'POST') return err('Somente POST', 405);
@@ -61,7 +106,7 @@ Deno.serve(async (req: Request) => {
           .select('id, command, payload, created_at')
           .eq('device_id', device.id).eq('owner_id', device.owner_id).eq('status', 'pending')
           .order('created_at', { ascending: true }).limit(20);
-        return error ? err('Erro ao consultar comandos', 500) : json({ ok: true, commands: data });
+        return error ? err('Erro ao consultar comandos', 500) : json({ ok: true, protocol_version: 2, commands: (data ?? []).map(forUnity) });
       }
       if (!uuid(b.command_id) || !['applied', 'failed'].includes(b.status)) return err('Confirmacao invalida');
       const { data, error } = await svc.from('remote_commands')
@@ -98,8 +143,9 @@ Deno.serve(async (req: Request) => {
     }
     if (action === 'send_command') {
       if (!uuid(b.device_id)) return err('Dispositivo invalido');
-      if (!['ping', 'set_state'].includes(b.command)) return err('Comando nao autorizado');
+      if (!['ping', 'set_state', 'set_option'].includes(b.command)) return err('Comando nao autorizado');
       const payload = b.command === 'ping' ? {} : b.payload;
+      if (b.command === 'set_option' && !validFeaturePayload(payload)) return err('Opcao remota invalida ou nao permitida');
       if (b.command === 'set_state' && (
         !payload || typeof payload !== 'object' || Array.isArray(payload) ||
         typeof payload.key !== 'string' || !/^[a-z][a-z0-9_]{0,31}$/i.test(payload.key) ||

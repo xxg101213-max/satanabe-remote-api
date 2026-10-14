@@ -1,4 +1,3 @@
-
 <!doctype html><html lang="pt-BR"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Satanabe Remote — Painel</title>
@@ -8,9 +7,29 @@
 main{max-width:760px;margin:auto;padding:25px 16px 60px}h1{font-size:28px;margin:4px 0 5px;font-weight:850;letter-spacing:.02em}h1 b{color:#ff335b}h2{font-size:17px;margin:0 0 15px}p,small{color:var(--muted)}.sub{font-size:13px;line-height:1.5;margin:0 0 26px}.tag{font-size:11px;border:1px solid #6f3140;border-radius:50px;padding:5px 10px;color:#ff8297;display:inline-block}
 section{background:linear-gradient(180deg,#1c161d,#110f14);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:15px;box-shadow:0 12px 30px #0005}
 label{display:block;font-size:12px;color:var(--muted);margin:11px 0 5px}input,select,textarea{width:100%;border:1px solid #523640;background:#0b0b10;color:var(--text);padding:12px;border-radius:10px;font-size:15px;outline:none}input:focus,select:focus{border-color:#e9486b}button{background:linear-gradient(110deg,#8f1633,#e02e58);border:0;border-radius:10px;color:#fff;min-height:43px;padding:10px 17px;font-weight:700;cursor:pointer}button.secondary{background:#302028;border:1px solid #65404b}button:disabled{opacity:.5;cursor:not-allowed}.buttonRow{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.buttonRow>*{flex:1}#notice{padding:13px 14px;border:1px solid #61383f;background:#22151c;color:#fbd2d9;border-radius:12px;margin-bottom:14px;white-space:pre-wrap;font-size:13px}#notice.ok{border-color:#176850;background:#112920;color:#a8f4de}.hidden{display:none!important}.device{border:1px solid #4d3037;border-radius:11px;padding:11px;margin:8px 0;background:#110e13}.device strong{display:block}.device small{display:block;margin-top:5px}.muted{color:var(--muted)}.pill{font-size:10px;padding:4px 7px;border-radius:20px;background:#35242d;color:#e8b7c0}.status{display:flex;align-items:center;justify-content:space-between;gap:8px}.mono{font:12px ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-all}.token{font-family:ui-monospace,monospace;font-size:12px;min-height:94px}.tip{border-left:2px solid #b82849;padding:0 0 0 12px;font-size:12px;line-height:1.55;color:#bdadb1}.switch{display:flex;gap:8px;align-items:center;margin-top:10px}.switch input{width:auto}.command{border-bottom:1px solid #3a2931;padding:10px 0;font-size:12px}.command:last-child{border-bottom:0}footer{text-align:center;font-size:12px;color:var(--muted);padding-top:12px}
+
+/* Satanabe Remote — controles baseados nos rótulos identificados no 4P2C */
+.remoteHeader{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.remoteHint{font-size:12px;line-height:1.55;color:var(--muted);margin:8px 0 14px}
+.featureGroup{margin-top:16px;padding:13px;border-radius:12px;background:#120e14;border:1px solid #47303a}
+.featureGroup h3{margin:0 0 8px;font-size:14px;color:#ff8196;letter-spacing:.04em;text-transform:uppercase}
+.feature{padding:12px 0;border-top:1px solid #34222b;display:grid;grid-template-columns:minmax(0,1fr) minmax(120px,176px);gap:8px;align-items:center}
+.feature:first-of-type{border-top:0}
+.feature label{margin:0;color:#f5ecf0;font-size:14px;font-weight:650}
+.feature .featureStatus{font-size:11px;color:#b7a4aa;display:block;margin-top:4px;font-weight:400;line-height:1.4}
+.feature select,.feature input[type=number],.feature input[type=color]{max-width:176px;justify-self:end}
+.feature input[type=color]{padding:4px;height:42px}
+.feature input[type=checkbox]{appearance:none;width:50px;height:28px;border:1px solid #71404c;border-radius:25px;background:#382831;position:relative;justify-self:end;cursor:pointer;transition:background .15s}
+.feature input[type=checkbox]::before{content:"";position:absolute;width:20px;height:20px;left:4px;top:3px;background:white;border-radius:50%;transition:transform .15s}
+.feature input[type=checkbox]:checked{background:linear-gradient(110deg,#98203b,#ef365f)}
+.feature input[type=checkbox]:checked::before{transform:translateX(21px)}
+.feature input:disabled,.feature select:disabled{opacity:.5;cursor:wait}
+.featurePreview{font-size:11px;color:#d6b2ba;background:#23151d;border:1px dashed #754252;border-radius:10px;padding:10px 12px;margin-top:12px;line-height:1.5}
+.controlCount{font-size:11px;padding:5px 8px;border-radius:9px;background:#271922;color:#f0a3b3}
+@media(max-width:410px){.feature{grid-template-columns:minmax(0,1fr) 124px}.feature label{font-size:13px}.feature select,.feature input[type=number]{padding:8px;font-size:13px}}
 </style>
 </head><body><main>
-<div class="tag">SATANABE • REMOTE</div><h1>SATANABE <b>REMOTE</b></h1><p class="sub">Painel administrativo de teste. Envie comandos ao banco e simule seu recebimento antes da integração com o Assembly.</p>
+<div class="tag">SATANABE • REMOTE</div><h1>SATANABE <b>REMOTE</b></h1><p class="sub">Painel administrativo com controles do Assembly 4P2C. Comandos são enviados à API; a aplicação real depende do cliente Remote no patch.</p>
 <div id="notice" role="status">Configure a chave pública e entre com sua conta Supabase.</div>
 <section id="setup"><h2>1. Conectar o projeto</h2><p class="tip">Insira somente a chave <b>publishable</b> (sb_publishable_...) do projeto. Nunca use a secret/service_role.</p><label for="publishable">Publishable API key</label><input id="publishable" placeholder="sb_publishable_..." autocomplete="off"><div class="buttonRow"><button id="savekey">Salvar chave pública</button></div><small>URL fixa: https://lifmejxuegtvtswlwved.supabase.co</small></section>
 <section id="login" class="hidden"><h2>2. Login administrativo</h2><label for="email">E-mail</label><input id="email" type="email" autocomplete="email"><label for="password">Senha</label><input id="password" type="password" autocomplete="current-password"><div class="buttonRow"><button id="signin">Entrar</button><button class="secondary" id="clearKey">Trocar chave pública</button></div></section>
@@ -18,9 +37,15 @@ label{display:block;font-size:12px;color:var(--muted);margin:11px 0 5px}input,se
 <section><div class="status"><h2>Dispositivos</h2><button class="secondary" id="signout">Sair</button></div><label for="devname">Nome do novo dispositivo</label><input id="devname" value="iPhone 2"><div class="buttonRow"><button id="create">Registrar dispositivo</button><button class="secondary" id="refresh">Atualizar</button></div><div id="deviceList"></div></section>
 <section id="tokenBox" class="hidden"><h2>Credencial gerada — copie agora</h2><p class="tip">Essa credencial é exibida uma única vez. Guarde em local privado. Qualquer pessoa com ela pode se passar pelo dispositivo até você revogá-lo.</p><label>ID do dispositivo</label><input id="newDeviceId" readonly class="mono"><label>Token de dispositivo</label><textarea id="newToken" class="token" readonly></textarea><div class="buttonRow"><button id="copyToken">Copiar token</button><button class="secondary" id="dismissToken">Ocultar</button></div></section>
 <section><h2>3. Enviar comando</h2><label for="target">Dispositivo de destino</label><select id="target"></select><div class="buttonRow"><button id="ping">Enviar PING</button></div><p class="tip">PING testa o caminho da mensagem; não modifica o jogo.</p><label for="stateKey">Chave de estado de teste (ex.: demo)</label><input id="stateKey" value="demo"><label class="switch"><input type="checkbox" id="stateValue"> Valor ativado</label><div class="buttonRow"><button class="secondary" id="sendState">Enviar estado de teste</button></div></section>
-<section><h2>4. Simular o iPhone 2</h2><p class="tip">O simulador permite testar a API agora, sem modificar o Assembly. Cole o token gerado acima e consulte a fila.</p><label for="simToken">Token do dispositivo selecionado</label><input id="simToken" type="password" placeholder="Cole o token do dispositivo" autocomplete="off"><div class="buttonRow"><button id="poll">Consultar fila</button></div><div id="pending"></div></section>
-<section><div class="status"><h2>Histórico de comandos</h2><button class="secondary" id="historyRefresh">Atualizar</button></div><div id="history"></div></section>
-</div><footer>Satanabe Remote • sistema independente • integração do hotfix ainda pendente</footer>
+<section id="remoteControls">
+  <div class="remoteHeader"><h2>4. Funções do Assembly — 4P2C</h2><span class="controlCount">14 controles</span></div>
+  <p class="remoteHint">Selecione o dispositivo acima. O site envia comandos autenticados à Supabase; um comando na fila não significa que foi aplicado no jogo. O estado só é confirmado quando um cliente real envia ACK.</p>
+  <div id="featureGroups"></div>
+  <div class="featurePreview">Função adicional encontrada: <b>Line target</b>. Seus valores não foram identificados com segurança, portanto ela ainda não possui controle remoto. Os limites de FOV usados no site são provisórios e precisam ser ajustados aos do patch.</div>
+</section>
+<section><h2>5. Simular o iPhone 2</h2><p class="tip">O simulador permite testar a API agora, sem modificar o Assembly. Cole o token gerado acima e consulte a fila.</p><label for="simToken">Token do dispositivo selecionado</label><input id="simToken" type="password" placeholder="Cole o token do dispositivo" autocomplete="off"><div class="buttonRow"><button id="poll">Consultar fila</button></div><div id="pending"></div></section>
+<section><div class="status"><h2>6. Histórico de comandos</h2><button class="secondary" id="historyRefresh">Atualizar</button></div><div id="history"></div></section>
+</div><footer>Satanabe Remote • painel 4P2C • aguardando integração do cliente no Assembly</footer>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.75.0';
 const projectUrl='https://lifmejxuegtvtswlwved.supabase.co';
@@ -30,6 +55,67 @@ const setVisible=(id,visible)=>$(id).classList.toggle('hidden',!visible);
 const safe=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let supabase=null, devices=[], session=null;
 function notice(s,ok=false){$('notice').textContent=s;$('notice').classList.toggle('ok',ok);}
+
+// Mapeamento de controles inferido APENAS dos rótulos do .bytes. Nenhum hook de runtime foi validado.
+const REMOTE_FEATURES = [{"key":"esp_enabled","label":"Ativar ESP","group":"esp","type":"boolean","observed":"Enable ESP"},{"key":"esp_skeleton","label":"Skeleton","group":"esp","type":"boolean","observed":"Skeleton"},{"key":"silent_aim","label":"Silent Aim (Magic Bullet)","group":"aim","type":"boolean","observed":"SILENT AIM (MAGIC BULLET)"},{"key":"aim_system","label":"Aim System (Assist)","group":"aim","type":"boolean","observed":"AIM SYSTEM (ASSIST)"},{"key":"legit_smooth_aimbot","label":"Legit Smooth Aimbot","group":"aim","type":"boolean","observed":"LEGIT SMOOTH AIMBOT"},{"key":"aim_fov_circle","label":"Círculo do FOV","group":"aim","type":"boolean","observed":"Aim FOV circle"},{"key":"silent_target","label":"Alvo Silent Aim","group":"aim","type":"enum","choices":[["mixed","Misto"],["head","Cabeça"],["body","Corpo"]],"observed":"Target: MIXED/HEAD/BODY"},{"key":"aim_system_target","label":"Alvo Aim System","group":"aim","type":"enum","choices":[["chest","Peito"],["head","Cabeça"]],"observed":"Aim system target: CHEST/HEAD"},{"key":"headshot_rate","label":"Taxa de Headshot","group":"aim","type":"enum","choices":[[100,"100%"],[75,"75%"],[50,"50%"],[0,"0%"]],"observed":"Headshot rate: 100/75/50/0%"},{"key":"fov_radius","label":"Raio do FOV","group":"aim","type":"number","min":1,"max":360,"step":1,"observed":"FOV radius: (limites não inferidos do patch)"},{"key":"no_recoil","label":"No Recoil","group":"misc","type":"boolean","observed":"No recoil"},{"key":"fast_weapon_switch","label":"Fast Weapon Switch","group":"misc","type":"boolean","observed":"Fast Weapon Switch"},{"key":"fov_color","label":"Cor do FOV","group":"colors","type":"color","observed":"FOV Color:"},{"key":"skeleton_color","label":"Cor do Skeleton","group":"colors","type":"color","observed":"Skeleton Color:"}];
+const REMOTE_GROUPS = {esp:'ESP CONFIGURATION',aim:'AIM CONFIGURATION',misc:'MISC CONFIGURATION',colors:'COLOR CONFIGURATION'};
+const featureStatus = new Map();
+function featureControl(def){
+ const wrap=document.createElement('div'); wrap.className='feature';
+ const desc=document.createElement('div');
+ const label=document.createElement('label'); label.textContent=def.label; desc.appendChild(label);
+ const st=document.createElement('span'); st.className='featureStatus'; st.dataset.statusKey=def.key; st.textContent='Sem comando enviado'; desc.appendChild(st);
+ wrap.appendChild(desc);
+ let field;
+ if(def.type==='boolean'){
+   field=document.createElement('input');field.type='checkbox';field.setAttribute('aria-label',def.label);
+ } else if(def.type==='enum'){
+   field=document.createElement('select');field.setAttribute('aria-label',def.label);
+   for(const [v,l] of def.choices){const option=document.createElement('option');option.value=String(v);option.textContent=l;field.appendChild(option)}
+ } else if(def.type==='number'){
+   field=document.createElement('input');field.type='number';field.min=def.min;field.max=def.max;field.step=def.step||1;field.value=90;field.setAttribute('aria-label',def.label);
+ } else {
+   field=document.createElement('input');field.type='color';field.value='#ff335b';field.setAttribute('aria-label',def.label);
+ }
+ field.dataset.featureKey=def.key;
+ field.addEventListener('change',attempt(async()=>{
+   if(!$('target').value)throw new Error('Registre e selecione um dispositivo antes de enviar opções.');
+   let value=field.type==='checkbox'?field.checked:field.value;
+   if(def.type==='number'||(def.type==='enum'&&typeof def.choices[0][0]==='number'))value=Number(value);
+   if(def.type==='number'&&(value<def.min||value>def.max||!Number.isInteger(value)))throw new Error('Valor de '+def.label+' fora do intervalo configurado');
+   field.disabled=true;
+   try{
+     const data=await api('send_command',{device_id:$('target').value,command:'set_option',payload:{key:def.key,value}});
+     st.textContent='Na fila • aguardando o Assembly';
+     st.dataset.commandId=data.command.id;
+     notice(def.label+': comando enviado à API. A aplicação no jogo ainda não foi confirmada.',true);
+     await history();
+   } finally {field.disabled=false}
+ }));
+ wrap.appendChild(field);return wrap;
+}
+function buildRemoteControls(){
+ const root=$('featureGroups');root.replaceChildren();
+ for(const [group,title] of Object.entries(REMOTE_GROUPS)){
+   const groupNode=document.createElement('div');groupNode.className='featureGroup';
+   const h=document.createElement('h3');h.textContent=title;groupNode.appendChild(h);
+   for(const def of REMOTE_FEATURES.filter(x=>x.group===group))groupNode.appendChild(featureControl(def));
+   root.appendChild(groupNode);
+ }
+}
+function syncFeatureStatuses(commands){
+ for(const def of REMOTE_FEATURES){
+   const status=document.querySelector('[data-status-key="'+def.key+'"]');
+   if(!status)continue;
+   const match=commands.find(c=>c.command==='set_option'&&c.payload?.key===def.key);
+   if(!match){status.textContent='Sem comando enviado';continue}
+   const date=match.processed_at||match.created_at;
+   const relative=date?(' • '+new Date(date).toLocaleString('pt-BR')):'';
+   const labels={pending:'Na fila (não aplicado)',applied:'ACK aplicado pelo cliente',failed:'Cliente reportou falha'};
+   status.textContent=(labels[match.status]||match.status)+relative;
+ }
+}
+
 function setupKey(){const key=localStorage.getItem('satanabe_publishable');setVisible('setup',!key);setVisible('login',!!key);setVisible('app',false);if(key){supabase=createClient(projectUrl,key,{auth:{autoRefreshToken:true,persistSession:true}});supabase.auth.getSession().then(({data})=>{if(data?.session){session=data.session;onLogin();}});} }
 async function api(action,data={},deviceToken=''){
  const headers={'Content-Type':'application/json'};
@@ -44,7 +130,7 @@ async function refresh(){const data=await api('list_devices');devices=data.devic
  for(const d of devices){const el=document.createElement('div');el.className='device';el.innerHTML='<div class="status"><strong>'+safe(d.name)+'</strong><span class="pill">'+(d.last_seen_at?'Último contato: '+safe(new Date(d.last_seen_at).toLocaleString('pt-BR')):'Nunca conectado')+'</span></div><small class="mono">'+safe(d.id)+'</small>';
  const button=document.createElement('button');button.className='secondary';button.style.marginTop='7px';button.textContent='Revogar dispositivo';button.onclick=attempt(async()=>{if(!confirm('Revogar '+d.name+'? O token será invalidado e o histórico apagado.'))return;await api('revoke_device',{device_id:d.id});await refresh();notice('Dispositivo revogado.',true)});el.appendChild(button);list.appendChild(el);}
  const select=$('target');const prev=select.value;select.innerHTML='';for(const d of devices){const o=document.createElement('option');o.value=d.id;o.textContent=d.name+' • '+d.id.slice(0,8);select.appendChild(o)}if(devices.some(d=>d.id===prev))select.value=prev;await history();}
-async function history(){const id=$('target').value;if(!id){$('history').textContent='Selecione um dispositivo.';return;}const data=await api('list_commands',{device_id:id});const list=$('history');list.innerHTML='';for(const c of data.commands){const el=document.createElement('div');el.className='command';el.textContent=c.command+' · '+c.status+' · '+new Date(c.created_at).toLocaleString('pt-BR')+' · '+JSON.stringify(c.payload);list.appendChild(el);}if(!data.commands.length)list.textContent='Sem comandos ainda.';}
+async function history(){const id=$('target').value;if(!id){$('history').textContent='Selecione um dispositivo.';return;}const data=await api('list_commands',{device_id:id});const list=$('history');list.innerHTML='';syncFeatureStatuses(data.commands);for(const c of data.commands){const el=document.createElement('div');el.className='command';el.textContent=c.command+' · '+c.status+' · '+new Date(c.created_at).toLocaleString('pt-BR')+' · '+JSON.stringify(c.payload);list.appendChild(el);}if(!data.commands.length)list.textContent='Sem comandos ainda.';}
 $('savekey').onclick=()=>{const k=$('publishable').value.trim();if(!/^sb_publishable_[\w-]+$/.test(k)&&!/^eyJ[a-zA-Z0-9._-]+$/.test(k)){notice('Insira uma publishable key válida.');return;}localStorage.setItem('satanabe_publishable',k);setupKey();notice('Chave pública salva. Faça login.',true)};
 $('clearKey').onclick=()=>{localStorage.removeItem('satanabe_publishable');supabase?.auth.signOut();session=null;setupKey();};
 $('signin').onclick=attempt(async()=>{const {data,error}=await supabase.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error)throw error;session=data.session;await onLogin();});
@@ -56,6 +142,6 @@ $('refresh').onclick=attempt(refresh);$('historyRefresh').onclick=attempt(histor
 $('ping').onclick=attempt(async()=>{if(!$('target').value)throw Error('Cadastre um dispositivo');await api('send_command',{device_id:$('target').value,command:'ping'});notice('PING enviado. Agora consulte a fila pelo simulador.',true);await history()});
 $('sendState').onclick=attempt(async()=>{if(!$('target').value)throw Error('Cadastre um dispositivo');await api('send_command',{device_id:$('target').value,command:'set_state',payload:{key:$('stateKey').value.trim(),value:$('stateValue').checked}});notice('Estado de teste colocado na fila.',true);await history()});
 $('poll').onclick=attempt(async()=>{const device_id=$('target').value,token=$('simToken').value.trim();if(!token)throw Error('Insira o token do dispositivo');const data=await api('poll',{device_id},token);const box=$('pending');box.innerHTML='';for(const cmd of data.commands){const el=document.createElement('div');el.className='device';el.innerHTML='<strong>'+safe(cmd.command)+'</strong><small>'+safe(JSON.stringify(cmd.payload))+'</small>';
-const b=document.createElement('button');b.textContent='Confirmar recebimento';b.style.marginTop='9px';b.onclick=attempt(async()=>{await api('ack',{device_id,command_id:cmd.id,status:'applied'},token);notice('Comando confirmado.',true);await history();$('poll').click()});el.appendChild(b);box.appendChild(el);}if(!data.commands.length)box.textContent='Fila vazia. Envie um PING antes.';notice('Consulta ao dispositivo concluída.',true)});
-setupKey();
+if(cmd.command==='set_option'||cmd.command==='set_state'){const warn=document.createElement('small');warn.textContent='Para opções do jogo, só um cliente que execute a função pode confirmar aplicação. O simulador não envia ACK.';el.appendChild(warn);box.appendChild(el);continue;}const b=document.createElement('button');b.textContent='Confirmar recebimento (simulação)';b.style.marginTop='9px';b.onclick=attempt(async()=>{await api('ack',{device_id,command_id:cmd.id,status:'applied'},token);notice('Comando confirmado.',true);await history();$('poll').click()});el.appendChild(b);box.appendChild(el);}if(!data.commands.length)box.textContent='Fila vazia. Envie um PING antes.';notice('Consulta ao dispositivo concluída.',true)});
+buildRemoteControls();setupKey();
 </script></main></body></html>
